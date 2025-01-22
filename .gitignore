@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/PRMuIS/CopilotIndices/17.12.31.40377
+/.vs/Telepsihologija
+/.vs/PRMuIS/v17
+/.vs
+/Klijent/Properties
+/Klijent/obj/Debug
+/Client/obj/Debug
+/Server/bin/Debug
+/Server/obj/Debug
