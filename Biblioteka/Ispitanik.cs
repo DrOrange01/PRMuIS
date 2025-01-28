@@ -13,8 +13,5 @@ namespace Biblioteka
         public string Prezime { get; set; }
         public int Id { get; set; }
         public int BrojPoena { get; set; }
-        public string Simbol { get; set; }
-        public DateTime VremePrikaza { get; set; }
-        public DateTime? VremeOdgovora { get; set; }
     }
 }

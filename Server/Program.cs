@@ -43,6 +43,12 @@ namespace Server
                     Console.WriteLine("Unesite format prikaza (levo, desno, sredina): ");
                 }
             } while (true);
+
+            Test podaci = new Test
+            {
+                VremeTrajanja = vremeTrajanja,
+                FormatPrikaza = formatPrikaza
+            };
             //
 
             //socket
@@ -58,6 +64,7 @@ namespace Server
 
             List<Socket> klijenti = new List<Socket>();
             byte[] buffer = new byte[1024];
+            int brBajta = 0;
 
             try
             {
@@ -96,10 +103,17 @@ namespace Server
                                 client.Blocking = false;
                                 klijenti.Add(client);
                                 Console.WriteLine($"Klijent se povezao sa {client.RemoteEndPoint}");
+
+                                using (MemoryStream ms = new MemoryStream())
+                                {
+                                    BinaryFormatter bf = new BinaryFormatter();
+                                    bf.Serialize(ms, podaci);
+                                    client.Send(ms.ToArray());
+                                }
                             }
                             else
                             {
-                                int brBajta = s.Receive(buffer);
+                                brBajta = s.Receive(buffer);
                                 if (brBajta == 0)
                                 {
                                     Console.WriteLine("Klijent je prekinuo komunikaciju");
@@ -115,6 +129,7 @@ namespace Server
                                         BinaryFormatter bf = new BinaryFormatter();
                                         Ispitanik ispitanik = bf.Deserialize(ms) as Ispitanik;
                                         Console.WriteLine($"Ispitanik:\nId: {ispitanik.Id} \nIme: {ispitanik.Ime} \nprezime: {ispitanik.Prezime} \nOstvareni poeni: {ispitanik.BrojPoena}");
+                                        rezultati.Add(ispitanik);
                                     }
                                 }
                             }
