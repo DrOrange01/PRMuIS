@@ -88,23 +88,33 @@ namespace Client
                 }
 
                 // Obrada reakcije
-                if (simbol == 'O' && reakcija)
+                string rezultat = simbol == 'O' && reakcija ? "Tačno" :
+                                  simbol == 'O' && !reakcija ? "Propušteno" :
+                                  simbol == 'X' && reakcija ? "Greška" : "Ispravno ignorisano";
+
+                Console.WriteLine(rezultat);
+
+                try
                 {
-                    ispitanik.BrojPoena++;
-                    Console.WriteLine("Tačno!");
+                    var rezultatTesta = new Rezultati
+                    {
+                        Simbol = simbol,
+                        Reakcija = reakcija,
+                        Rezultat = rezultat,
+                        VremeReakcije = DateTime.Now - prikazVreme
+                    };
+
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        BinaryFormatter bf = new BinaryFormatter();
+                        bf.Serialize(ms, rezultatTesta);
+                        buffer = ms.ToArray();
+                        clientSocket.Send(buffer);
+                    }
                 }
-                else if (simbol == 'O' && !reakcija)
+                catch (SocketException ex)
                 {
-                    Console.WriteLine("Propušteno!");
-                }
-                else if (simbol == 'X' && reakcija)
-                {
-                    Console.WriteLine("Greška! Nije trebalo da reagujete.");
-                }
-                else
-                {
-                    ispitanik.BrojPoena++;
-                    Console.WriteLine("Ispravno ignorisano.");
+                    Console.WriteLine($"Greška pri slanju odgovora serveru: {ex}");
                 }
 
                 // Pauza pre sledećeg simbola

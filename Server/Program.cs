@@ -93,7 +93,6 @@ namespace Server
 
                     if (checkRead.Count > 0)
                     {
-                        Console.WriteLine($"Broj dogadjaja je: {checkRead.Count}");
                         foreach (Socket s in checkRead)
                         {
                             if (s == serverSocket)
@@ -127,9 +126,10 @@ namespace Server
                                     using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
                                     {
                                         BinaryFormatter bf = new BinaryFormatter();
-                                        Ispitanik ispitanik = bf.Deserialize(ms) as Ispitanik;
-                                        Console.WriteLine($"Ispitanik:\nId: {ispitanik.Id} \nIme: {ispitanik.Ime} \nprezime: {ispitanik.Prezime} \nOstvareni poeni: {ispitanik.BrojPoena}");
-                                        rezultati.Add(ispitanik);
+                                        Rezultati odgovor = bf.Deserialize(ms) as Rezultati;
+                                        Console.WriteLine($"Primljen odgovor: Simbol: {odgovor.Simbol}," +
+                                            $" Reakcija: {odgovor.Reakcija}, Rezultat: {odgovor.Rezultat}, " +
+                                            $"Vreme reakcije: {odgovor.VremeReakcije}");
                                     }
                                 }
                             }
