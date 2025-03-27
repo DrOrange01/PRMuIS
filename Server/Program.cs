@@ -20,6 +20,7 @@ namespace Server
             sredina
         }
         static List<Ispitanik> rezultati = new List<Ispitanik>();
+        static List<Rezultati> rez = new List<Rezultati>();
         static int brojIspitanika;
         static int vremeTrajanja;
         static string formatPrikaza;
@@ -118,7 +119,10 @@ namespace Server
                                     Console.WriteLine("Klijent je prekinuo komunikaciju");
                                     s.Close();
                                     klijenti.Remove(s);
-
+                                    if(klijenti.Count == 0)
+                                    {
+                                        break;
+                                    }
                                     continue;
                                 }
                                 else
@@ -127,20 +131,24 @@ namespace Server
                                     {
                                         BinaryFormatter bf = new BinaryFormatter();
                                         Rezultati odgovor = bf.Deserialize(ms) as Rezultati;
-                                        Console.WriteLine($"Primljen odgovor: Simbol: {odgovor.Simbol}," +
-                                            $" Reakcija: {odgovor.Reakcija}, Rezultat: {odgovor.Rezultat}, " +
-                                            $"Vreme reakcije: {odgovor.VremeReakcije}");
+                                        if (odgovor != null)
+                                        {
+                                            rez.Add(odgovor);
+                                            Console.WriteLine($"Primljen odgovor: Simbol: {odgovor.Simbol}," +
+                                                $" Reakcija: {odgovor.Reakcija}, Rezultat: {odgovor.Rezultat}, " +
+                                                $"Vreme reakcije: {odgovor.VremeReakcije}");
+                                        }
                                     }
                                 }
                             }
 
-                            if (Console.KeyAvailable)
-                            {
-                                if (Console.ReadKey().Key == ConsoleKey.Escape)
-                                {
-                                    break;
-                                }
-                            }
+                        }
+                    }
+                    if (Console.KeyAvailable)
+                    {
+                        if (Console.ReadKey().Key == ConsoleKey.Escape)
+                        {
+                            break;
                         }
                     }
                     checkRead.Clear();
@@ -154,8 +162,18 @@ namespace Server
 
             foreach (Socket s in klijenti)
             {
-                s.Send(Encoding.UTF8.GetBytes("Server je zavrsio sa radom"));
-                s.Close();
+                try
+                {
+                    s.Send(Encoding.UTF8.GetBytes("Server je zavrsio sa radom"));
+                }
+                catch (SocketException ex)
+                {
+                    Console.WriteLine($"Greška pri slanju poruke: {ex.Message}");
+                }
+                finally
+                {
+                    s.Close();
+                }
             }
 
             Console.WriteLine("Server zavrsava sa radom");

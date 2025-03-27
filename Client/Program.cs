@@ -61,10 +61,18 @@ namespace Client
             }
 
             Random random = new Random();
-            DateTime startTime = DateTime.Now;
-            DateTime endTime = startTime.AddSeconds(podaci.VremeTrajanja);
+            
 
             Console.WriteLine("\nTest počinje! Reagujte na simbol 'O' (pritisnite Space), ignorišite simbol 'X'.");
+            System.Threading.Thread.Sleep(500);
+            Console.WriteLine("3");
+            System.Threading.Thread.Sleep(500);
+            Console.WriteLine("2");
+            System.Threading.Thread.Sleep(500);
+            Console.WriteLine("1");
+            System.Threading.Thread.Sleep(500);
+            DateTime startTime = DateTime.Now;
+            DateTime endTime = startTime.AddSeconds(podaci.VremeTrajanja);
             while (DateTime.Now < endTime)
             {
                 // Generisanje slučajnog simbola (X ili O)
@@ -93,6 +101,11 @@ namespace Client
                                   simbol == 'X' && reakcija ? "Greška" : "Ispravno ignorisano";
 
                 Console.WriteLine(rezultat);
+
+                if(rezultat!="Propušteno" && rezultat != "Greška")
+                {
+                    ispitanik.BrojPoena++;
+                }
 
                 try
                 {
@@ -124,21 +137,8 @@ namespace Client
             Console.WriteLine("\nTest je završen!");
             Console.WriteLine($"Ukupan broj poena: {ispitanik.BrojPoena}");
 
-            try
-            {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(ms, ispitanik);
-                    buffer = ms.ToArray();
-                    clientSocket.Send(buffer);
-                }
-                Console.WriteLine("Rezultati su uspesno poslati!");
-            }
-            catch (SocketException ex)
-            {
-                Console.WriteLine($"Doslo je do greske tokom slanja:\n{ex}");
-            }
+            clientSocket.Send(new byte[0]);
+
             Console.WriteLine("Klijent zavrsava sa radom");
             Console.ReadKey();
             clientSocket.Close();
