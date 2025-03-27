@@ -32,6 +32,13 @@ namespace Client
             {
                 clientSocket.Connect(serverEP);
                 Console.WriteLine("Klijent je uspesno povezan sa serverom!");
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    BinaryFormatter bf = new BinaryFormatter();
+                    bf.Serialize(ms, ispitanik);
+                    buffer = ms.ToArray();
+                    clientSocket.Send(buffer);
+                }
             }
             catch (SocketException ex)
             {
@@ -42,6 +49,7 @@ namespace Client
             Test podaci = null;
             try
             {
+                while (clientSocket.Available == 0) { }
                 int brBajta = clientSocket.Receive(buffer);
                 using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
                 {
@@ -114,7 +122,8 @@ namespace Client
                         Simbol = simbol,
                         Reakcija = reakcija,
                         Rezultat = rezultat,
-                        VremeReakcije = DateTime.Now - prikazVreme
+                        VremeReakcije = DateTime.Now - prikazVreme,
+                        IspitanikId = ispitanik.Id
                     };
 
                     using (MemoryStream ms = new MemoryStream())

@@ -19,7 +19,7 @@ namespace Server
             desno,
             sredina
         }
-        static List<Ispitanik> rezultati = new List<Ispitanik>();
+        static List<Ispitanik> ispitanici = new List<Ispitanik>();
         static List<Rezultati> rez = new List<Rezultati>();
         static int brojIspitanika;
         static int vremeTrajanja;
@@ -100,7 +100,7 @@ namespace Server
                             {
 
                                 Socket client = serverSocket.Accept();
-                                client.Blocking = false;
+                                client.Blocking = true;
                                 klijenti.Add(client);
                                 Console.WriteLine($"Klijent se povezao sa {client.RemoteEndPoint}");
 
@@ -110,6 +110,27 @@ namespace Server
                                     bf.Serialize(ms, podaci);
                                     client.Send(ms.ToArray());
                                 }
+
+                                //using (MemoryStream ms = new MemoryStream())
+                                //{
+                                //    BinaryFormatter bf = new BinaryFormatter();
+                                //    bf.Serialize(ms, podaci);
+                                //    client.Send(ms.ToArray());
+                                //}
+                                
+                                    brBajta = client.Receive(buffer);
+                                    using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
+                                    {
+                                        BinaryFormatter bf = new BinaryFormatter();
+                                        Ispitanik noviIspitanik = bf.Deserialize(ms) as Ispitanik;
+                                        if (noviIspitanik != null)
+                                        {
+                                            ispitanici.Add(noviIspitanik);
+                                            Console.WriteLine($"Novi ispitanik: {noviIspitanik.Ime} {noviIspitanik.Prezime}, ID: {noviIspitanik.Id}");
+                                        }
+                                    }
+                                
+                                
                             }
                             else
                             {
@@ -127,16 +148,35 @@ namespace Server
                                 }
                                 else
                                 {
+                                    //using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
+                                    //{
+                                    //    BinaryFormatter bf = new BinaryFormatter();
+                                    //    Rezultati odgovor = bf.Deserialize(ms) as Rezultati;
+                                    //    if (odgovor != null)
+                                    //    {
+                                    //        rez.Add(odgovor);
+                                    //        Console.WriteLine($"Primljen odgovor: Simbol: {odgovor.Simbol}," +
+                                    //            $" Reakcija: {odgovor.Reakcija}, Rezultat: {odgovor.Rezultat}, " +
+                                    //            $"Vreme reakcije: {odgovor.VremeReakcije}");
+                                    //    }
+                                    //}
                                     using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
                                     {
                                         BinaryFormatter bf = new BinaryFormatter();
                                         Rezultati odgovor = bf.Deserialize(ms) as Rezultati;
                                         if (odgovor != null)
                                         {
-                                            rez.Add(odgovor);
-                                            Console.WriteLine($"Primljen odgovor: Simbol: {odgovor.Simbol}," +
-                                                $" Reakcija: {odgovor.Reakcija}, Rezultat: {odgovor.Rezultat}, " +
-                                                $"Vreme reakcije: {odgovor.VremeReakcije}");
+                                            Ispitanik ispitanik = ispitanici.FirstOrDefault(i => i.Id == odgovor.IspitanikId);
+
+                                            if (ispitanik != null)
+                                            {
+                                                ispitanik.ListaRezultata.Add(odgovor);
+                                                Console.WriteLine($"Dodati rezultati za {ispitanik.Ime} {ispitanik.Prezime}: Simbol: {odgovor.Simbol}, Reakcija: {odgovor.Reakcija}");
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("Neuspešno povezivanje rezultata sa ispitanikom.");
+                                            }
                                         }
                                     }
                                 }
@@ -175,8 +215,16 @@ namespace Server
                     s.Close();
                 }
             }
-
-            Console.WriteLine("Server zavrsava sa radom");
+            Console.WriteLine("\n=== REZULTATI TESTA ===");
+            foreach (var isp in ispitanici)
+            {
+                Console.WriteLine($"Ispitanik: {isp.Ime} {isp.Prezime}, ID: {isp.Id}");
+                foreach (var r in isp.ListaRezultata)
+                {
+                    Console.WriteLine($"Simbol: {r.Simbol}, Reakcija: {r.Reakcija}, Rezultat: {r.Rezultat}, Vreme: {r.VremeReakcije}");
+                }
+            }
+            Console.WriteLine(" Server zavrsava sa radom");
             Console.ReadKey();
             serverSocket.Close();
         }

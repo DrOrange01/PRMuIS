@@ -13,5 +13,11 @@ namespace Biblioteka
         public string Prezime { get; set; }
         public int Id { get; set; }
         public int BrojPoena { get; set; }
+        public List<Rezultati> ListaRezultata { get; set; } = new List<Rezultati>();
+
+        public void DodajRezultat(Rezultati rezultat)
+        {
+            ListaRezultata.Add(rezultat);
+        }
     }
 }
