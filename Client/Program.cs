@@ -83,9 +83,7 @@ namespace Client
             DateTime endTime = startTime.AddSeconds(podaci.VremeTrajanja);
             while (DateTime.Now < endTime)
             {
-                // Generisanje slučajnog simbola (X ili O)
                 char simbol = random.Next(0, 2) == 0 ? 'X' : 'O';
-                //Console.WriteLine($"Simbol: {simbol}");
                 string simb = "Simbol: " + simbol;
                 IspisiSimbol(simb, podaci.FormatPrikaza);
                 DateTime prikazVreme = DateTime.Now;

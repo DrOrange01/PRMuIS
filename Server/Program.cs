@@ -110,14 +110,6 @@ namespace Server
                                     bf.Serialize(ms, podaci);
                                     client.Send(ms.ToArray());
                                 }
-
-                                //using (MemoryStream ms = new MemoryStream())
-                                //{
-                                //    BinaryFormatter bf = new BinaryFormatter();
-                                //    bf.Serialize(ms, podaci);
-                                //    client.Send(ms.ToArray());
-                                //}
-                                
                                     brBajta = client.Receive(buffer);
                                     using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
                                     {
@@ -148,18 +140,6 @@ namespace Server
                                 }
                                 else
                                 {
-                                    //using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
-                                    //{
-                                    //    BinaryFormatter bf = new BinaryFormatter();
-                                    //    Rezultati odgovor = bf.Deserialize(ms) as Rezultati;
-                                    //    if (odgovor != null)
-                                    //    {
-                                    //        rez.Add(odgovor);
-                                    //        Console.WriteLine($"Primljen odgovor: Simbol: {odgovor.Simbol}," +
-                                    //            $" Reakcija: {odgovor.Reakcija}, Rezultat: {odgovor.Rezultat}, " +
-                                    //            $"Vreme reakcije: {odgovor.VremeReakcije}");
-                                    //    }
-                                    //}
                                     using (MemoryStream ms = new MemoryStream(buffer, 0, brBajta))
                                     {
                                         BinaryFormatter bf = new BinaryFormatter();
