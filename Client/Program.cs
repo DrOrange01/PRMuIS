@@ -85,8 +85,9 @@ namespace Client
             {
                 // Generisanje slučajnog simbola (X ili O)
                 char simbol = random.Next(0, 2) == 0 ? 'X' : 'O';
-                Console.WriteLine($"Simbol: {simbol}");
-
+                //Console.WriteLine($"Simbol: {simbol}");
+                string simb = "Simbol: " + simbol;
+                IspisiSimbol(simb, podaci.FormatPrikaza);
                 DateTime prikazVreme = DateTime.Now;
 
                 bool reakcija = false;
@@ -155,6 +156,22 @@ namespace Client
             Console.WriteLine("Klijent zavrsava sa radom");
             Console.ReadKey();
             clientSocket.Close();
+        }
+        static void IspisiSimbol(string simbol, string poravnanje)
+        {
+            int sirina = Console.WindowWidth;
+            switch (poravnanje.ToLower())
+            {
+                case "sredina":
+                    Console.WriteLine(simbol.PadLeft((sirina + simbol.Length) / 2));
+                    break;
+                case "desno":
+                    Console.WriteLine(simbol.PadLeft(sirina));
+                    break;
+                default: // levo
+                    Console.WriteLine(simbol);
+                    break;
+            }
         }
     }
 }
