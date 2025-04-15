@@ -171,7 +171,15 @@ namespace Server
                                             if (ispitanik != null)
                                             {
                                                 ispitanik.ListaRezultata.Add(odgovor);
-                                                Console.WriteLine($"Dodati rezultati za {ispitanik.Ime} {ispitanik.Prezime}: Simbol: {odgovor.Simbol}, Reakcija: {odgovor.Reakcija}");
+                                                //Console.WriteLine($"Dodati rezultati za {ispitanik.Ime} {ispitanik.Prezime}: Simbol: {odgovor.Simbol}, Reakcija: {odgovor.Reakcija}");
+                                                if (odgovor.Rezultat != "Propušteno" && odgovor.Rezultat != "Greška")
+                                                {
+                                                    ispitanik.BrojPoena++;
+                                                }
+                                                else
+                                                {
+                                                    ispitanik.BrojPoena --;
+                                                }
                                             }
                                             else
                                             {
@@ -186,9 +194,37 @@ namespace Server
                     }
                     if (Console.KeyAvailable)
                     {
-                        if (Console.ReadKey().Key == ConsoleKey.Escape)
+                        var key = Console.ReadKey(intercept: true).Key;
+
+                        if (key == ConsoleKey.Escape)
                         {
                             break;
+                        }
+                        else if (key == ConsoleKey.R)
+                        {
+                            IspisiRezultate();
+                        }
+                        else if (key == ConsoleKey.S)
+                        {
+                            string kriterijum = "";
+                            bool validanUnos = false;
+
+                            do
+                            {
+                                Console.WriteLine("\nUnesite kriterijum za sortiranje (ime, poeni, id): ");
+                                kriterijum = Console.ReadLine();
+
+                                if (kriterijum.ToLower() == "ime" || kriterijum.ToLower() == "poeni" || kriterijum.ToLower() == "id")
+                                {
+                                    validanUnos = true;
+                                    SortirajIspitanike(kriterijum);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("⚠ Nevažeći kriterijum. Dozvoljeni: ime, poeni, id.");
+                                }
+
+                            } while (!validanUnos);
                         }
                     }
                     checkRead.Clear();
@@ -215,6 +251,12 @@ namespace Server
                     s.Close();
                 }
             }
+            Console.WriteLine(" Server zavrsava sa radom");
+            Console.ReadKey();
+            serverSocket.Close();
+        }
+        static void IspisiRezultate()
+        {
             Console.WriteLine("\n=== REZULTATI TESTA ===");
             foreach (var isp in ispitanici)
             {
@@ -223,10 +265,35 @@ namespace Server
                 {
                     Console.WriteLine($"Simbol: {r.Simbol}, Reakcija: {r.Reakcija}, Rezultat: {r.Rezultat}, Vreme: {r.VremeReakcije}");
                 }
+                Console.WriteLine($"Ukupan broj poena: {isp.BrojPoena}");
             }
-            Console.WriteLine(" Server zavrsava sa radom");
-            Console.ReadKey();
-            serverSocket.Close();
         }
+        static void SortirajIspitanike(string kriterijum)
+        {
+
+            switch (kriterijum.ToLower())
+            {
+                case "ime":
+                    ispitanici = ispitanici.OrderBy(i => i.Ime).ThenBy(i => i.Prezime).ToList();
+                    break;
+                case "poeni":
+                    ispitanici = ispitanici.OrderByDescending(i => i.BrojPoena).ToList();
+                    break;
+                case "id":
+                    ispitanici = ispitanici.OrderBy(i => i.Id).ToList();
+                    break;
+                default:
+                    Console.WriteLine("Nepoznat kriterijum. Koristite: ime, poeni ili id.");
+                    return;
+            }
+
+            Console.WriteLine($"\n=== SORTIRANI ISPITANICI PO: {kriterijum.ToUpper()} ===");
+            foreach (var isp in ispitanici)
+            {
+                Console.WriteLine($"Ispitanik: {isp.Ime} {isp.Prezime}, ID: {isp.Id}, Broj poena: {isp.BrojPoena}");
+            }
+            Console.WriteLine("=== KRAJ PRIKAZA ===\n");
+        }
+
     }
 }

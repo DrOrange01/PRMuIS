@@ -114,6 +114,10 @@ namespace Client
                 {
                     ispitanik.BrojPoena++;
                 }
+                else
+                {
+                    ispitanik.BrojPoena--;
+                }
 
                 try
                 {
