@@ -150,7 +150,7 @@ namespace Server
 
                                             if (ispitanik != null)
                                             {
-                                                ispitanik.ListaRezultata.Add(odgovor);
+                                                ispitanik.DodajRezultat(odgovor);
                                                 //Console.WriteLine($"Dodati rezultati za {ispitanik.Ime} {ispitanik.Prezime}: Simbol: {odgovor.Simbol}, Reakcija: {odgovor.Reakcija}");
                                                 if (odgovor.Rezultat != "Propušteno" && odgovor.Rezultat != "Greška")
                                                 {
