@@ -201,7 +201,31 @@ namespace Server
                                 }
                                 else
                                 {
-                                    Console.WriteLine("⚠ Nevažeći kriterijum. Dozvoljeni: ime, poeni, id.");
+                                    Console.WriteLine("Nevažeći kriterijum. Dozvoljeni: ime, poeni, id.");
+                                }
+
+                            } while (!validanUnos);
+                        }
+                        else if (key == ConsoleKey.J)
+                        {
+                            string kriterijum = "";
+                            bool validanUnos = false;
+
+                            do
+                            {
+                                Console.WriteLine("\nUnesite kriterijum za pretragu (ime, poeni, id): ");
+                                kriterijum = Console.ReadLine();
+
+                                if (kriterijum.ToLower() == "ime" || kriterijum.ToLower() == "poeni" || kriterijum.ToLower() == "id")
+                                {
+                                    validanUnos = true;
+                                    Console.WriteLine("Unesite vrednost za pretragu: ");
+                                    string vrednost = Console.ReadLine();
+                                    IspisiRezultateZaJednogKorisnika(kriterijum, vrednost);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Nevažeći kriterijum. Dozvoljeni: ime, poeni, id.");
                                 }
 
                             } while (!validanUnos);
@@ -246,6 +270,71 @@ namespace Server
                     Console.WriteLine($"Simbol: {r.Simbol}, Reakcija: {r.Reakcija}, Rezultat: {r.Rezultat}, Vreme: {r.VremeReakcije}");
                 }
                 Console.WriteLine($"Ukupan broj poena: {isp.BrojPoena}");
+            }
+        }
+        static void IspisiRezultateZaJednogKorisnika(string kriterijum, string vrednost)
+        {
+            Console.WriteLine("\n=== REZULTATI TESTA ZA IZABRANOG KORISNIKA ===");
+            int id;
+            int poeni;
+            bool pronadjen = false;
+            if (kriterijum.ToLower() == "id")
+            {
+                id = int.Parse(vrednost);
+                foreach (var isp in ispitanici)
+                {
+                    if (isp.Id == id)
+                    {
+                        Console.WriteLine($"Ispitanik: {isp.Ime} {isp.Prezime}, ID: {isp.Id}");
+                        foreach (var r in isp.ListaRezultata)
+                        {
+                            Console.WriteLine($"Simbol: {r.Simbol}, Reakcija: {r.Reakcija}, Rezultat: {r.Rezultat}, Vreme: {r.VremeReakcije}");
+                        }
+                        Console.WriteLine($"Ukupan broj poena: {isp.BrojPoena}");
+                        pronadjen = true;
+                    }
+                }
+            }
+            else if (kriterijum.ToLower() == "ime")
+            {
+                foreach (var isp in ispitanici)
+                {
+                    if (isp.Ime == vrednost)
+                    {
+                        Console.WriteLine($"Ispitanik: {isp.Ime} {isp.Prezime}, ID: {isp.Id}");
+                        foreach (var r in isp.ListaRezultata)
+                        {
+                            Console.WriteLine($"Simbol: {r.Simbol}, Reakcija: {r.Reakcija}, Rezultat: {r.Rezultat}, Vreme: {r.VremeReakcije}");
+                        }
+                        Console.WriteLine($"Ukupan broj poena: {isp.BrojPoena}");
+                        pronadjen = true;
+                    }
+                }
+            }
+            else if (kriterijum.ToLower() == "poeni")
+            {
+                foreach (var isp in ispitanici)
+                {
+                    poeni = int.Parse(vrednost);
+                    if (isp.BrojPoena == poeni)
+                    {
+                        Console.WriteLine($"Ispitanik: {isp.Ime} {isp.Prezime}, ID: {isp.Id}");
+                        foreach (var r in isp.ListaRezultata)
+                        {
+                            Console.WriteLine($"Simbol: {r.Simbol}, Reakcija: {r.Reakcija}, Rezultat: {r.Rezultat}, Vreme: {r.VremeReakcije}");
+                        }
+                        Console.WriteLine($"Ukupan broj poena: {isp.BrojPoena}");
+                        pronadjen = true;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nepoznat kriterijum pretrage.");
+            }
+            if(!pronadjen)
+            {
+                Console.WriteLine("Korisnik nije pronadjen.");
             }
         }
         static void SortirajIspitanike(string kriterijum)
